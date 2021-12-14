@@ -17,7 +17,7 @@ class CreateGradebooksTable extends Migration
             $table->id();
             $table->timestamps();
             $table->string('name');
-            $table->foreignId('professor_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
         });
     }
 
