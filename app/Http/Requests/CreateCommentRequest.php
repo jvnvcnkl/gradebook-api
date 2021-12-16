@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateGradebookRequest extends FormRequest
+class CreateCommentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +24,8 @@ class CreateGradebookRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'min:2|max:255'
-
+            'text' => 'required|string|max:1000'
+    
         ];
     }
 }

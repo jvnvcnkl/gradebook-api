@@ -15,7 +15,8 @@ class UpdateGradebookRequest extends FormRequest
     public function authorize()
     {
         // return Gradebook::findOrFail($id)->user_id == Auth::id();
-        $id = $this->route('id');
+       // $id = $this->route('id');
+       return true;
     }
 
     /**

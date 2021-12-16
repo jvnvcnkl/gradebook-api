@@ -1,6 +1,14 @@
 <?php
 
 use App\Http\Controllers\GradebookController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\StudentController;
+
+
+
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,17 +27,29 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
-Route::get('/gradebooks', [GradebookController::class, 'index']);
-Route::post('/gradebooks', [GradebookController::class, 'store']);
-Route::post('/gradebooks/{movie}', [GradebookController::class, 'show']);
-Route::put('/gradebooks/{movie}', [GradebookController::class, 'update']);
-Route::delete('/gradebooks/{movie}  ', [GradebookController::class, 'destroy']);
-
 Route::group(['prefix' => '/auth'], function () {
 
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
-    Route::get('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'getActiveUser']);
+    Route::get('/logout', [AuthController::class, 'logout']);
 });
+
+
+Route::get('/gradebooks', [GradebookController::class, 'index']);
+Route::post('/gradebooks', [GradebookController::class, 'store']);
+Route::get('/gradebooks/{gradebook}', [GradebookController::class, 'show']);
+Route::put('/gradebooks/{gradebook}', [GradebookController::class, 'update']);
+Route::delete('/gradebooks/{gradebook}  ', [GradebookController::class, 'destroy']);
+
+
+Route::get('/teachers', [TeacherController::class, 'index']);
+Route::get('/teachers/available', [TeacherController::class, 'showAvailable']);
+
+Route::get('/gradebooks/{gradebook}/students', [StudentController::class, 'index']);
+Route::post('gradebooks/{gradebook}/students/create', [StudentController::class, 'store']);
+
+
+Route::post('/gradebooks/{gradebook}/comments', [CommentController::class, 'store']);
+Route::get('//gradebooks/{gradebook}', [CommentController::class, 'index']);
+Route::get('/gradebooks/{gradebook}/comments/{comment}', [CommentController::class, 'destroy']);

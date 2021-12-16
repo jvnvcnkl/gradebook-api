@@ -17,7 +17,7 @@ class GradebookController extends Controller
      */
     public function index()
     {
-        $gradebooks = Gradebook::with('user')->get();
+        $gradebooks = Gradebook::with('user')->paginate(10);
 
         return response()->json($gradebooks);
     }
