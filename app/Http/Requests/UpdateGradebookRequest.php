@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Gradebook;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateGradebookRequest extends FormRequest
 {
@@ -14,9 +15,9 @@ class UpdateGradebookRequest extends FormRequest
      */
     public function authorize()
     {
-        // return Gradebook::findOrFail($id)->user_id == Auth::id();
-       // $id = $this->route('id');
-       return true;
+
+        $gradebook = $this->route('gradebook');
+        return $gradebook->user_id == Auth::id();
     }
 
     /**

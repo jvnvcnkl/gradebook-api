@@ -51,5 +51,4 @@ Route::post('gradebooks/{gradebook}/students/create', [StudentController::class,
 
 
 Route::post('/gradebooks/{gradebook}/comments', [CommentController::class, 'store']);
-Route::get('//gradebooks/{gradebook}', [CommentController::class, 'index']);
 Route::get('/gradebooks/{gradebook}/comments/{comment}', [CommentController::class, 'destroy']);

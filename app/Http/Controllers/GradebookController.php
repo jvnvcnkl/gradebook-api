@@ -7,6 +7,9 @@ use App\Http\Requests\UpdateGradebookRequest;
 use Illuminate\Http\Request;
 use App\Models\Gradebook;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\UnauthorizedException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class GradebookController extends Controller
 {
@@ -15,9 +18,10 @@ class GradebookController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $gradebooks = Gradebook::with('user')->paginate(10);
+        $filter = $request->query('filter', '');
+        $gradebooks = Gradebook::with('user')->filterByName($filter)->paginate(10);
 
         return response()->json($gradebooks);
     }
@@ -49,11 +53,10 @@ class GradebookController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Gradebook $gradebook)
     {
-        $gradebook = Gradebook::findOrFail($id);
-
-        return response()->json($gradebook);
+        $gradebookComments = $gradebook->comments()->get();
+        return response()->json($gradebookComments);
     }
 
     /**
@@ -63,9 +66,8 @@ class GradebookController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateGradebookRequest $request, $id)
+    public function update(UpdateGradebookRequest $request, Gradebook $gradebook)
     {
-        $gradebook = Gradebook::findOrFail($id);
         $gradebook->update($request->all());
 
         return response()->json($gradebook);
@@ -77,9 +79,11 @@ class GradebookController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Gradebook $gradebook)
     {
-        $gradebook = Gradebook::findOrFail($id);
+        if ($gradebook->user_id != Auth::id()) {
+            throw new AccessDeniedHttpException("You can only delete your own gradebook.");
+        }
         $gradebook->delete();
 
         return response()->json($gradebook);
