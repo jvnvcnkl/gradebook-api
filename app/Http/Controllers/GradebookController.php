@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateGradebookRequest;
+use App\Http\Requests\UpdateGradebookRequest;
 use Illuminate\Http\Request;
 use App\Models\Gradebook;
+use App\Models\User;
 
 class GradebookController extends Controller
 {
@@ -14,7 +17,7 @@ class GradebookController extends Controller
      */
     public function index()
     {
-        $gradebooks = Gradebook::all();
+        $gradebooks = Gradebook::with('user')->paginate(10);
 
         return response()->json($gradebooks);
     }
@@ -25,11 +28,16 @@ class GradebookController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateGradebookRequest $request)
     {
-        $gradebook = Gradebook::create([
+        $user = User::with('gradebook')->findOrFail($request->get('user_id'));
+
+        if ($user->gradebook) {
+            return response()->json(['message' => "User already has a gradebook"], 400);
+        }
+
+        $gradebook = $user->gradebook()->create([
             'name' => $request->get('name'),
-            'user_id' => $request->get('user_id'),
         ]);
 
         return response()->json($gradebook);
@@ -55,10 +63,10 @@ class GradebookController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateGradebookRequest $request, $id)
     {
         $gradebook = Gradebook::findOrFail($id);
-        $gradebook->update($request->all);
+        $gradebook->update($request->all());
 
         return response()->json($gradebook);
     }
