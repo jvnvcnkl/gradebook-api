@@ -29,10 +29,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::group(['prefix' => '/auth'], function () {
 
-    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/login', [AuthController::class, 'login'])->name('login');
     Route::post('/register', [AuthController::class, 'register']);
-    Route::get('/me', [AuthController::class, 'getActiveUser']);
-    Route::get('/logout', [AuthController::class, 'logout']);
+    Route::get('/me', [AuthController::class, 'getActiveUser'])->middleware('auth:api');
+    Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
+    Route::post('/auth/refresh', [AuthController::class, 'refreshToken'])->middleware('auth:api');
 });
 
 

@@ -13,6 +13,12 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class GradebookController extends Controller
 {
+
+    // public function __construct()
+    // {
+    //     $this->middleware('auth');
+    // }
+
     /**
      * Display a listing of the resource.
      *
