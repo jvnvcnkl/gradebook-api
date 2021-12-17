@@ -40,15 +40,14 @@ class GradebookController extends Controller
      */
     public function store(CreateGradebookRequest $request)
     {
-        $user = User::with('gradebook')->findOrFail($request->get('user_id'));
+        $data = $request->validated();
 
+        $user = User::with('gradebook')->findOrFail($data['user_id']);
         if ($user->gradebook) {
             return response()->json(['message' => "User already has a gradebook"], 400);
         }
 
-        $gradebook = $user->gradebook()->create([
-            'name' => $request->get('name'),
-        ]);
+        $gradebook = $user->gradebook()->create($data);
 
         return response()->json($gradebook);
     }
@@ -74,7 +73,8 @@ class GradebookController extends Controller
      */
     public function update(UpdateGradebookRequest $request, Gradebook $gradebook)
     {
-        $gradebook->update($request->all());
+        $data = $request->validated();
+        $gradebook->update($data->all());
 
         return response()->json($gradebook);
     }

@@ -52,4 +52,14 @@ class User extends Authenticatable implements JWTSubject
             'name' => $this->name
         ];
     }
+    public function scopeFilterByName($query, $filter = '')
+    {
+
+        if (!$filter) {
+            return $query;
+        };
+
+
+        return $query->whereRaw('lower(concat(users.first_name, " ", users.last_name)) like "%' . $filter . '%"');
+    }
 }

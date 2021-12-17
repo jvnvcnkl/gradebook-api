@@ -23,9 +23,11 @@ class CreateGradebookRequest extends FormRequest
      */
     public function rules()
     {
+        info("Validate create gradebook");
+        info($this->all());
         return [
-            'name' => 'min:2|max:255'
-
+            'name' => 'required|string|min:2|max:255',
+            'user_id' => 'required|integer|exists:users,id'
         ];
     }
 }

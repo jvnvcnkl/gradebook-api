@@ -32,7 +32,7 @@ Route::group(['prefix' => '/auth'], function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login');
     Route::post('/register', [AuthController::class, 'register']);
     Route::get('/me', [AuthController::class, 'getActiveUser'])->middleware('auth:api');
-    Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
+    Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/auth/refresh', [AuthController::class, 'refreshToken'])->middleware('auth:api');
 });
 
