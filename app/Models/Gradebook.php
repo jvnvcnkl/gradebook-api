@@ -27,4 +27,14 @@ class Gradebook extends Model
     {
         return $this->hasMany(Student::class);
     }
+
+    public function scopeFilterByName($query, $filter = '')
+    {
+
+        if (!$filter) {
+            return $query;
+        };
+
+        return $query->where('name', 'like', "%{$filter}%");
+    }
 }

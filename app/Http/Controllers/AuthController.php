@@ -19,7 +19,7 @@ class AuthController extends Controller
 
 
         $token = Auth::attempt($credentials);
-
+        $user =Auth::user()->gradebook;
         if (!$token) {
             return response()->json([
                 'message' => 'Invalid credentials'
@@ -27,7 +27,7 @@ class AuthController extends Controller
         }
         return response()->json([
             'token' => $token,
-            'user' => Auth::user()
+            'user' => Auth::user(),
         ]);
     }
 

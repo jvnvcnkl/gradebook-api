@@ -28,7 +28,8 @@ class RegisterRequest extends FormRequest
             'last_name' => "required|max:255",
             'email' => "required|email|max:255",
             'password' => "required|confirmed|min:8|regex:/[0-9]/",
-            'image_url' => "required",
+            'image_url' => "required|url",
+            'accept_tnc' => "boolean|in:1"
 
         ];
     }

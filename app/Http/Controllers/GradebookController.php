@@ -7,17 +7,27 @@ use App\Http\Requests\UpdateGradebookRequest;
 use Illuminate\Http\Request;
 use App\Models\Gradebook;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\UnauthorizedException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class GradebookController extends Controller
 {
+
+    // public function __construct()
+    // {
+    //     $this->middleware('auth');
+    // }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $gradebooks = Gradebook::with('user')->paginate(10);
+        $filter = $request->query('filter', '');
+        $gradebooks = Gradebook::with('user')->filterByName($filter)->paginate(10);
 
         return response()->json($gradebooks);
     }
@@ -30,15 +40,14 @@ class GradebookController extends Controller
      */
     public function store(CreateGradebookRequest $request)
     {
-        $user = User::with('gradebook')->findOrFail($request->get('user_id'));
+        $data = $request->validated();
 
+        $user = User::with('gradebook')->findOrFail($data['user_id']);
         if ($user->gradebook) {
             return response()->json(['message' => "User already has a gradebook"], 400);
         }
 
-        $gradebook = $user->gradebook()->create([
-            'name' => $request->get('name'),
-        ]);
+        $gradebook = $user->gradebook()->create($data);
 
         return response()->json($gradebook);
     }
@@ -49,11 +58,11 @@ class GradebookController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
-        $gradebook = Gradebook::findOrFail($id);
+    public function show(Gradebook $gradebook){
 
-        return response()->json($gradebook);
+        $gradebookDetailed = Gradebook::with('user','comments','students')->findOrFail($gradebook->id);
+
+        return response()->json($gradebookDetailed);
     }
 
     /**
@@ -63,10 +72,10 @@ class GradebookController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateGradebookRequest $request, $id)
+    public function update(UpdateGradebookRequest $request, Gradebook $gradebook)
     {
-        $gradebook = Gradebook::findOrFail($id);
-        $gradebook->update($request->all());
+        $data = $request->validated();
+        $gradebook->update($data->all());
 
         return response()->json($gradebook);
     }
@@ -77,9 +86,11 @@ class GradebookController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Gradebook $gradebook)
     {
-        $gradebook = Gradebook::findOrFail($id);
+        if ($gradebook->user_id != Auth::id()) {
+            throw new AccessDeniedHttpException("You can only delete your own gradebook.");
+        }
         $gradebook->delete();
 
         return response()->json($gradebook);
